@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Link Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #linkInput {
+      width: 80%;
+      padding: 10px;
+      margin: 10px;
+      font-size: 14px;
+    }
+    #convertButton {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #outputLink {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #outputLink a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Link Converter</h1>
+  <input type="text" id="linkInput" placeholder="Paste Repl.it or GitHub link">
+  <button id="convertButton">Convert</button>
+  <div id="outputLink"></div>
+
+  <script>
+    document.getElementById("convertButton").addEventListener("click", function () {
+      var linkInput = document.getElementById("linkInput").value;
+
+      var replitPattern = /https:\/\/replit\.com\/@[^/]+\/([^/]+)(?:\?.*)?#([^?]+)/;
+      var githubPattern = /github\.com\/([^/]+)\/([^/]+)\/blob\/main\/(.+)/i;
+
+      var replitMatch = linkInput.match(replitPattern);
+      var githubMatch = linkInput.match(githubPattern);
+
+      if (replitMatch) {
+        var placeholder = replitMatch[1];
+        var path = replitMatch[2];
+        var username = linkInput.match(/https:\/\/replit\.com\/@([^/]+)/)[1];
+        if (path.endsWith("index.html")) {
+          path = path.substring(0, path.length - 10); // Remove "index.html"
+        }
+        var alternateLink = `${placeholder}.${username}.repl.co/${path}`;
+        var fullAlternateLink = "https://" + alternateLink.replace(/\?v=\d+/, "");
+        document.getElementById("outputLink").innerHTML = "Converted Replit link: <a href='" + fullAlternateLink + "'>" + fullAlternateLink + "</a>";
+      } else if (githubMatch) {
+        const username = githubMatch[1];
+        const repo = githubMatch[2];
+        const path = githubMatch[3];
+        const outputLink = `https://${username}.github.io/${repo}/${path}`;
+        document.getElementById('outputLink').innerHTML = `Converted GitHub Link: <a href="${outputLink}" target="_blank">${outputLink}</a>`;
+      } else {
+        document.getElementById("outputLink").textContent = "Invalid link format.";
+      }
+    });
+  </script>
+</body>
+</html>
